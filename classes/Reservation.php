@@ -40,7 +40,6 @@ public function getStatut(){
 
 
 //setters
-
 public function setId($id_res){
     $this->id_res = $id_res;
 }
