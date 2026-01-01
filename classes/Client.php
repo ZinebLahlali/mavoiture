@@ -46,6 +46,23 @@ class Client extends User
    }
 
 
+   public function cree()
+   { 
+     $sql = "INSERT INTO clients (nom, prenom, email, password, mobile, adresse, ville) VALUES (?, ?, ?, ?, ?, ?, ?)"
+     $stmt = $pdo->prepare($sql);
+     $stmt->execute([
+        $nom,
+        $prenom,
+        $email,
+        $password,
+        $mobile,
+        $adresse,
+        $ville
+     ]);
+
+   }
+
+
 
 
 }

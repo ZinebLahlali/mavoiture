@@ -13,6 +13,8 @@ CREATE DATABASE mabagnole;
     ville varchar (100) NOT NULL
  );
 
+ 
+
   
 
  CREATE TABLE categories(
