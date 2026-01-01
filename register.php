@@ -16,26 +16,30 @@
       $c->setMobile(htmlspecialchars(trim($_POST['mobile'])));
       $c->setAdresse(htmlspecialchars(trim($_POST['adresse'])));
       $c->setVille(htmlspecialchars(trim($_POST['ville'])));
-      
+        
 
-      if($password !== $confirm){
-          $_SESSION['error'] = "Les mots de passe ne correspondent pas.";
-      } else {
-        //vérifie si l'utilisateur exite déja
-        $check = $pdo->prepare("SELECT * FROM client WHERE email = ?");
-        $check->execute([$email]);
-        if ($check->rowCount() > 0) {
-            $_SESSION['error'] = "Ce email déjà utilisé.";
-        } else {
+     if(!empty($c->getNom())&&!empty($c->getPrenom())&&!empty($c->getEmail())&&!empty($c->getPassword())&&!empty($c->getMobile())&&!empty($c->getAdresse())&&!empty($c->getVille())){
+            if($c->getPassword() !== $confirm){
+                $_SESSION['error'] = "Les mots de passe ne correspondent pas.";
+                exit;
+            } 
+                //vérifie si l'utilisateur exite déja
+                $check = $pdo->prepare("SELECT * FROM client WHERE email = ?");
+                $check->execute([$c->getEmail()]);
+                if ($check->rowCount() > 0) {
+                    $_SESSION['error'] = "Ce email déjà utilisé.";
+                    exit;
+                } 
+                //mote de passe hash
+                $hashed = password_hash($c->getPassword(), PASSWORD_DEFAULT);
+                $c->setPassword($hashed);
 
-         $hashed = password_hash($password, PASSWORD_DEFAULT);
+                $c->creer();
+                header('location: profil.php');
+                exit;
 
-      }
-   }
-    if(!empty($u->getNom())&&!empty($u->getEmail())&&!empty($u->getPassword())&&!empty($u->getRole())){
-        $c->creer();
-        header('location: profilr.php');
-        exit;
+    } else {
+         $_SESSION['error'] = "Tous les champs sont requis.";
     }
 
 }

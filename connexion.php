@@ -19,7 +19,7 @@
             header("location: dashboard.php");
             exit;
         } else if($user['role'] == "client"){
-            header("location: profile.php");
+            header("location: profil.php");
             exit;
         }else{
             header("location: index.php");
