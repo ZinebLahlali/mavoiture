@@ -1,6 +1,17 @@
 <?php
   session_start();
-  require_once 'database.php';
+  require_once './classes/database.php';
+      $db = new Database();
+      $pdo = $db->getPdo();
+
+      
+
+//    $stmt = $pdo->prepare("SELECT * FROM vehicules WHERE id_car = 3 ");
+//     $stmt->execute();
+//     $user = $stmt->fetch();
+//     print_r($user);
+
+
   if(isset($_POST['login'])){
     $email = htmlspecialchars(trim($_POST['email'])); 
     $password = $_POST['password'];

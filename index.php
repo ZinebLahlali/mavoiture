@@ -1,3 +1,25 @@
+<?php
+include_once './classes/Vehicule.php';
+include_once './classes/Database.php';
+  $db = new Database();
+  $pdo = $db->getPdo();
+
+  
+  $vehicules = Vehicule::listerTous(); 
+
+
+
+
+
+
+
+
+?>
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -86,41 +108,24 @@
         <h2 class="text-3xl font-bold text-gray-800">Véhicules disponibles</h2>
         <div class="h-1 w-20 bg-red-600 mt-2"></div>
       </div>
-      <button class="text-red-600 font-semibold hover:underline">Voir tout →</button>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <?php foreach($vehicules as $vehicule): ?>
       <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow group">
         <div class="relative overflow-hidden">
-          <img src="https://images.unsplash.com/photo-1541899481282-d53bffe3c15d?auto=format&fit=crop&q=80&w=800" alt="Renault Clio" class="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500">
-          <span class="absolute top-4 right-4 bg-white px-3 py-1 rounded-full text-sm font-bold shadow-sm">35€/jour</span>
+          <img src="<?php echo htmlspecialchars($vehicule["image"]);  ?>" class="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500">
+          <span   class="absolute top-4 right-4 bg-white px-3 py-1 rounded-full text-sm font-bold shadow-sm"><?php echo htmlspecialchars($vehicule["prix"]); ?>DH</span>
         </div>
         <div class="p-6">
-          <h4 class="text-xl font-bold text-gray-800 mb-2">Renault Clio 5</h4>
-          <div class="flex items-center space-x-4 text-gray-500 text-sm mb-6">
-            <span><i class="fas fa-gas-pump mr-1"></i> Essence</span>
-            <span><i class="fas fa-user-friends mr-1"></i> 5 Places</span>
-            <span><i class="fas fa-cog mr-1"></i> Manuel</span>
-          </div>
-          <a href="#" class="block text-center bg-gray-100 text-gray-800 font-bold py-3 rounded-xl hover:bg-red-600 hover:text-white transition-colors">Réserver maintenant</a>
-        </div>
-      </div>
 
-      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow group">
-        <div class="relative overflow-hidden">
-          <img src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&q=80&w=800" alt="Peugeot 5008" class="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500">
-          <span class="absolute top-4 right-4 bg-white px-3 py-1 rounded-full text-sm font-bold shadow-sm">65€/jour</span>
-        </div>
-        <div class="p-6">
-          <h4 class="text-xl font-bold text-gray-800 mb-2">Peugeot 5008</h4>
-          <div class="flex items-center space-x-4 text-gray-500 text-sm mb-6">
-            <span><i class="fas fa-gas-pump mr-1"></i> Diesel</span>
-            <span><i class="fas fa-user-friends mr-1"></i> 7 Places</span>
-            <span><i class="fas fa-cog mr-1"></i> Auto</span>
-          </div>
-          <a href="#" class="block text-center bg-gray-100 text-gray-800 font-bold py-3 rounded-xl hover:bg-red-600 hover:text-white transition-colors">Réserver maintenant</a>
+          <h4 class="text-xl font-bold text-gray-800 mb-2"><?php echo htmlspecialchars($vehicule["marque"]);  ?></h4>
+          <h4 class="text-xl font-bold text-gray-800 mb-2"><?php echo htmlspecialchars($vehicule["categorie"]);  ?></h4>
+          
+          <a href="details.php?id=<?= $vehicule['id_car'] ?>" class="block text-center bg-gray-100 text-gray-800 font-bold py-3 rounded-xl hover:bg-red-600 hover:text-white transition-colors">Voir détails</a>
         </div>
       </div>
+      <?php endforeach;?>
     </div>
   </section>
 

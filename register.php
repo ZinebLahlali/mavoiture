@@ -2,6 +2,8 @@
    session_start();
    require_once 'database.php';
    require_once "./classes/Client.php";
+      $db = new Database();
+      $pdo = $db->getPdo();
 
   $c = new Client();
 

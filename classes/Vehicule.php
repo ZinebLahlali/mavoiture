@@ -9,10 +9,11 @@ class Vehicule
    private $nb_places;
    private $marque;
    private $bagages;
+   private $image;
 
 
 
-public function __construct($id_car, $modele, $prix, $disponible, $carburant,$boite_vitesse, $nb_places, $marque, $bagage){
+public function __construct($id_car, $modele, $prix, $disponible, $carburant,$boite_vitesse, $nb_places, $marque, $bagage, $image){
          $this->id_car = $id_car;
          $this->modele = $modele;
          $this->prix = $prix;
@@ -22,6 +23,7 @@ public function __construct($id_car, $modele, $prix, $disponible, $carburant,$bo
          $this->nb_places = $nb_places;
          $this->marque = $marque;
          $this->bagages = $bagages;
+         $this->image = $image;
 
 } 
 
@@ -55,6 +57,9 @@ public function getMarque(){
 public function getBagages(){
     return $this->bagages;
 }
+public function getImage(){
+    return $this->image;
+}
 
 
 //sterres
@@ -64,7 +69,7 @@ public function setId($id_car){
 public function setModele($modele){
     $this->modele = $modele;
 }
-public function setPrix($prix ){
+public function setPrix($prix){
     $this->prix  = $prix;
 }
 public function setDisponible($disponible){
@@ -85,6 +90,47 @@ public function setMarque($marque){
 public function setBagages($bagages){
     $this->bagages = $bagages;
 }
+public function setImage($image){
+    $this->image = $image;
+}
+
+
+public  static function listerTous()
+{     $db = new Database();
+      $pdo = $db->getPdo();
+
+    $sql = "SELECT *, categories.nom AS categorie
+    FROM vehicules
+    LEFT JOIN categories ON vehicules.id_cate = categories.id_C";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+}
+
+
+public static function getById($id_car)
+{     $db = new Database();
+      $pdo = $db->getPdo();
+
+    $sql = "SELECT *, categories.nom AS categorie
+    FROM vehicules
+    LEFT JOIN categories ON vehicules.id_cate = categories.id_C WHERE id_car = ?";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$id_car]);
+
+    //   $stmt->setFetchMode(PDO::FETCH_CLASS, 'Vehicule');
+     return $stmt->fetch();
+
+}
+
+
+
+
+
+
+
 
 }
 
