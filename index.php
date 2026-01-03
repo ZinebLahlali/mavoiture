@@ -1,6 +1,9 @@
 <?php
 include_once './classes/Vehicule.php';
 include_once './classes/Database.php';
+include_once './classes/VehiculeRepository.php';
+include_once 'connexion.php';
+
   $db = new Database();
   $pdo = $db->getPdo();
 
@@ -8,6 +11,30 @@ include_once './classes/Database.php';
   $vehicules = Vehicule::listerTous(); 
 
 
+  //search
+           if(isset($_POST['submit'])) {
+            $key = $_POST['key'];
+             $search = "%$key%";
+            $stmt = $pdo->prepare("SELECT *, categories.nom AS categorie
+            FROM vehicules
+            LEFT JOIN categories ON vehicules.id_cate = categories.id_C WHERE  modele LIKE ? OR categories.nom LIKE ?");
+            $stmt->execute([$search ,$search]);
+            $result = $stmt->fetchAll(); 
+            
+             
+
+
+     }   
+
+     //filtering
+       if(isset($_POST['submit'])){
+            $key = $_POST['key'];
+             $NomCategories = "%$key%";
+             $vehiculeRepo = new VehiculeRepository($pdo);
+             $vehicules = $vehiculeRepo->filtrerParCategorie($NomCategories);
+
+       }
+    
 
 
 
@@ -41,7 +68,7 @@ include_once './classes/Database.php';
       </div>
 
       <div class="hidden md:flex items-center space-x-8 font-medium text-gray-600">
-        <a href="#" class="hover:text-red-600 transition">Accueil</a>
+        <a href="Home.php" class="hover:text-red-600 transition">Accueil</a>
         <a href="#" class="hover:text-red-600 transition">Nos Voitures</a>
         <a href="#" class="hover:text-red-600 transition">Contact</a>
         <a href="#" class="bg-red-600 text-white px-6 py-2 rounded-full hover:bg-red-700 transition shadow-md">Réservation</a>
@@ -67,18 +94,22 @@ include_once './classes/Database.php';
                 </button>
             </div>
 
-            <form class="p-8 space-y-5">
+            <form  method="POST"  class="p-8 space-y-5">
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1">Email</label>
-                    <input type="email" placeholder="exemple@mail.com" class="w-full px-4 py-3 bg-gray-50 border rounded-xl focus:ring-2 focus:ring-red-500 outline-none">
+                    <input name="email" type="email" placeholder="exemple@mail.com" class="w-full px-4 py-3 bg-gray-50 border rounded-xl focus:ring-2 focus:ring-red-500 outline-none">
                 </div>
-
+                             <?php if(isset($_SESSION['error'])): ?>
+                                <div class="bg-red-100 text-red-700 p-3 rounded-lg mb-4">
+                                    <?php echo $_SESSION['error']; unset($_SESSION['error']); ?>
+                                </div>
+                            <?php endif; ?>
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1">Mot de passe</label>
-                    <input type="password" placeholder="••••••••" class="w-full px-4 py-3 bg-gray-50 border rounded-xl focus:ring-2 focus:ring-red-500 outline-none">
+                    <input  name="password_hash" type="password" placeholder="••••••••" class="w-full px-4 py-3 bg-gray-50 border rounded-xl focus:ring-2 focus:ring-red-500 outline-none">
                 </div>
 
-                <button type="submit" class="w-full bg-red-600 text-white font-bold py-3 rounded-xl hover:bg-red-700 transition shadow-lg">
+                <button  name="login" type="submit" class="w-full bg-red-600 text-white font-bold py-3 rounded-xl hover:bg-red-700 transition shadow-lg">
                     Valider
                 </button>
             </form>
@@ -96,13 +127,36 @@ include_once './classes/Database.php';
     <div class="container mx-auto px-6 relative z-10 text-center">
       <h1 class="text-4xl md:text-6xl font-extrabold mb-4">Louez la voiture idéale</h1>
       <p class="text-xl mb-8 text-gray-200">Large choix de véhicules au meilleur prix à Casablanca.</p>
-      <div class="flex justify-center gap-4">
-        <a href="#fleet" class="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-bold transition">Voir le catalogue</a>
-      </div>
+      
     </div>
   </section>
 
   <section id="fleet" class="container mx-auto px-6 py-16">
+             
+            <div class="container mx-auto mt-10 mb-10 px-4">
+                    <form method="POST" action="index.php" class="flex items-center justify-center gap-3 bg-white p-4 rounded-2xl shadow-lg max-w-xl mx-auto">
+                            <input type="text" name="key" placeholder="Rechercher une voiture..."
+                                class="flex-1 px-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 transition">
+                           <input type="submit" name="submit" value="Rechreche" 
+                           class="px-6 py-2 rounded-full bg-blue-500 text-white font-medium hover:bg-blue-600 active:scale-95 transition shadow-md">
+                    </form>
+            </div>
+            <div >
+                <?php
+                 if (!empty($result)) {
+                        foreach ($result as $car) {
+                            echo '<h4>' . htmlspecialchars($car['modele']) . ' ' . htmlspecialchars($car['categorie']) . '</h4>';
+                        }
+                    }
+                    // } else {
+                    //     echo '<h4 class="text-danger">Aucune voiture trouvée !</h4>';
+                    // }
+
+                    
+                ?>
+            </div>
+
+
     <div class="flex justify-between items-end mb-12">
       <div>
         <h2 class="text-3xl font-bold text-gray-800">Véhicules disponibles</h2>

@@ -6,8 +6,8 @@ class Client extends User
    protected $adresse;
    protected $ville
 
-   public function __construct($id_user, $nom, $prenom, $email,$password, $mobile, $adresse, $ville)
-   {  parent::__construct($id_user, $nom, $prenom, $email,$password);
+   public function __construct($id_user, $nom, $prenom, $email,$password_hash, $mobile, $adresse, $ville)
+   {  parent::__construct($id_user, $nom, $prenom, $email,$password_hash);
       $this->mobile = $mobile;
       $this->adresse = $adresse;
       $this->ville = $ville;
@@ -48,7 +48,7 @@ class Client extends User
 
    public function cree()
    { 
-     $sql = "INSERT INTO clients (nom, prenom, email, password, mobile, adresse, ville) VALUES (?, ?, ?, ?, ?, ?, ?)"
+     $sql = "INSERT INTO clients (nom, prenom, email, password_hash, mobile, adresse, ville) VALUES (?, ?, ?, ?, ?, ?, ?)"
      $stmt = $pdo->prepare($sql);
      $stmt->execute([
         $nom,

@@ -5,15 +5,15 @@
     private $nom;
     private $prenom;
     private $email;
-    private $password;
+    private $password_hash;
 
 
-    public function __construct($id_user, $nom, $prenom, $email,$password)
+    public function __construct($id_user, $nom, $prenom, $email,$password_hash)
     {      $this->id_user = $id_user;
            $this->nom = $nom;
            $this->prenom= $prenom;
            $this->email = $email;
-           $this->password = $password;       
+           $this->password_hash = $password_hash;       
     }
 
             
@@ -31,7 +31,7 @@
             return $this->email;
         }
         public function getPassword(){
-            return $this->password;
+            return $this->password_hash;
         }
 
 
@@ -48,8 +48,8 @@
         public function setEmail($email){
             $this->email = $email;
         }
-        public function setPassword($password){
-            $this->password = $password;
+        public function setPassword($password_hash){
+            $this->password_hash= $password_hash;
         }
 
 

@@ -41,7 +41,7 @@ include_once './classes/Database.php';
       </div>
 
       <div class="hidden md:flex items-center space-x-8 font-medium text-gray-600">
-        <a href="#" class="hover:text-red-600 transition">Accueil</a>
+        <a href="Home.php" class="hover:text-red-600 transition">Accueil</a>
         <a href="index.php" class="hover:text-red-600 transition">Nos Voitures</a>
         <a href="#" class="hover:text-red-600 transition">Contact</a>
       </div>
@@ -55,10 +55,7 @@ include_once './classes/Database.php';
 
   <section id="fleet" class="container mx-auto px-6 py-16">
     <div class="flex justify-between items-end mb-12">
-      <div>
-        <h2 class="text-3xl font-bold text-gray-800">Véhicules disponibles</h2>
-        <div class="h-1 w-20 bg-red-600 mt-2"></div>
-      </div>
+     
     </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow group">

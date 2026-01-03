@@ -4,36 +4,32 @@
       $db = new Database();
       $pdo = $db->getPdo();
 
-      
-
-//    $stmt = $pdo->prepare("SELECT * FROM vehicules WHERE id_car = 3 ");
-//     $stmt->execute();
-//     $user = $stmt->fetch();
-//     print_r($user);
-
+    
+  
 
   if(isset($_POST['login'])){
-    $email = htmlspecialchars(trim($_POST['email'])); 
-    $password = $_POST['password'];
+    $email = trim($_POST['email']); 
+    $password = $_POST['password_hash'];
+
 
     $stmt = $pdo->prepare("SELECT * FROM clients WHERE email = ?");
     $stmt->execute([$email]);
-    $user = $stmt->fetch();
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     
-    if($user && password_verify($password, $user['password'])){
+    if($user && password_verify($password, $user['password_hash'])){
         $_SESSION['id_client'] = $user['id'];
         $_SESSION['email'] = $user['email'];
         $_SESSION['role'] = $user['role'];
 
-        if($user['role'] == "admin"){
+        if($user['role'] === "admin"){
             header("location: dashboard.php");
             exit;
-        } else if($user['role'] == "client"){
-            header("location: profil.php");
+        } else if($user['role'] === "client"){
+            header("location: index.php");
             exit;
         }else{
-            header("location: index.php");
+            header("location: Home.php");
         }  
 
     } else{
@@ -41,6 +37,7 @@
     }
 
   }
+
 
 
 

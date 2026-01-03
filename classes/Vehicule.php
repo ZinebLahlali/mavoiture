@@ -5,7 +5,7 @@ class Vehicule
    private $prix;
    private $disponible;
    private $carburant;
-   private $boite_vitesse;
+   private $boit_vitesse;
    private $nb_places;
    private $marque;
    private $bagages;
@@ -13,13 +13,13 @@ class Vehicule
 
 
 
-public function __construct($id_car, $modele, $prix, $disponible, $carburant,$boite_vitesse, $nb_places, $marque, $bagage, $image){
+public function __construct($id_car, $modele, $prix, $disponible, $carburant,$boit_vitesse, $nb_places, $marque, $bagages, $image){
          $this->id_car = $id_car;
          $this->modele = $modele;
          $this->prix = $prix;
          $this->disponible = $disponible;
          $this->carburant = $carburant;
-         $this->boite_vitesse = $boite_vitesse;
+         $this->boit_vitesse = $boit_vitesse;
          $this->nb_places = $nb_places;
          $this->marque = $marque;
          $this->bagages = $bagages;
@@ -45,7 +45,7 @@ public function getCarburant(){
     return $this->carburant;
 }
 public function getBoite(){
-    return $this->boite_vitesse;
+    return $this->boit_vitesse;
 }
 
 public function getNbPlaces(){
@@ -79,7 +79,7 @@ public function setCarburant($carburant){
     $this->carburant = $carburant;
 }
 public function setBoite($boite_vitesse){
-    $this->boite_vitesse = $boite_vitesse;
+    $this->boit_vitesse = $boit_vitesse;
 }
 public function setNbPlaces($nb_places){
     $this->nb_places = $nb_places;
@@ -124,6 +124,24 @@ public static function getById($id_car)
      return $stmt->fetch();
 
 }
+
+
+// public static function searchParModel()
+// {       $db = new Database();
+//        $pdo = $db->getPdo();
+//       $sql = "SELECT *, categories.nom AS categorie
+//     FROM vehicules
+//     LEFT JOIN categories ON vehicules.id_cate = categories.id_C WHERE  modele LIKE :search_car OR categories.nom LIKE :search_car";
+//     $stmt = $pdo->prepare($sql);
+//     $stmt ->bindValue(':search_car' , $search_car)
+
+
+// } 
+
+
+
+
+
 
 
 
