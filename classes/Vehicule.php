@@ -126,17 +126,7 @@ public static function getById($id_car)
 }
 
 
-// public static function searchParModel()
-// {       $db = new Database();
-//        $pdo = $db->getPdo();
-//       $sql = "SELECT *, categories.nom AS categorie
-//     FROM vehicules
-//     LEFT JOIN categories ON vehicules.id_cate = categories.id_C WHERE  modele LIKE :search_car OR categories.nom LIKE :search_car";
-//     $stmt = $pdo->prepare($sql);
-//     $stmt ->bindValue(':search_car' , $search_car)
 
-
-// } 
 
 
 

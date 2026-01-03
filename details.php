@@ -1,18 +1,44 @@
 <?php
+session_start();
 include_once './classes/Vehicule.php';
 include_once './classes/Database.php';
+include_once './classes/Reservation.php';
   $db = new Database();
   $pdo = $db->getPdo();
  
-  
-//  if(!isset($_GET['id_car'])) {
-
-//     die("voiture manquant");
-//  }
 
  $id_car = $_GET['id'] ?? null;
   if($id_car){
     $vehicule = Vehicule::getById($id_car);
+  }
+
+
+ 
+
+  if(isset($_POST['submit'])){
+        $id_car = $_SESSION['id_car'];
+        $id_client = $_SESSION['id_client']; 
+        $dateDebut = $_POST['date_debut'] ?? '';
+        $dateFin = $_POST['date_fin'] ?? '';
+        $lieuD = $_POST['lieu_depart'] ?? '';
+        $lieuR = $_POST['lieu_retour'] ?? '';
+       
+
+     $res = new Reservation();
+     $res->setDatedebut($dateDebut);
+    $res->setDatefin($dateFin);
+    $res->setLieuD($lieuD);
+    $res->setlieuR($lieuR);
+    $res->setClient($id_client);
+     
+     if($res->isDisponible($id_car, $dateDebut, $dateFin)){
+           $res->creer();
+            header('location: details.php');
+            exit;
+    } else {
+        echo "cette voiture n'est pas disponible pour ces dates";
+    }
+   
   }
 
 
@@ -31,6 +57,7 @@ include_once './classes/Database.php';
 </head>
 <body class="bg-slate-50 font-sans">
 
+  <!-- Header -->
   <header class="bg-white shadow-sm sticky top-0 z-50">
     <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
       <div class="flex items-center space-x-2">
@@ -47,77 +74,114 @@ include_once './classes/Database.php';
       </div>
       
       <button class="md:hidden text-gray-600"><i class="fas fa-bars text-2xl"></i></button>
-         <span class="font-bold text-red-600">LOCATION-VOITURE.ma</span>
-        
-     
     </nav>
   </header>
 
+  <!-- Fleet Section -->
   <section id="fleet" class="container mx-auto px-6 py-16">
     <div class="flex justify-between items-end mb-12">
-     
+      <h2 class="text-3xl font-bold text-gray-800">Notre flotte</h2>
     </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow group">
 
-                            <!-- Image -->
-                            <div class="relative overflow-hidden">
-                            <img src="<?php echo htmlspecialchars($vehicule["image"]); ?>" 
-                                class="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500">
-                            <span class="absolute top-4 right-4 bg-white px-4 py-1 rounded-full text-sm font-bold shadow-sm">
-                                Le prix/Jour: <?php echo htmlspecialchars($vehicule["prix"]); ?> DH
-                            </span>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <!-- Example Vehicle Card -->
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow group">
+        <!-- Image -->
+        <div class="relative overflow-hidden">
+          <img src="<?php echo htmlspecialchars($vehicule['image']); ?>" 
+               class="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500">
+          <span class="absolute top-4 right-4 bg-white px-4 py-1 rounded-full text-sm font-bold shadow-sm">
+            Le prix/Jour: <?php echo htmlspecialchars($vehicule['prix']); ?> DH
+          </span>
+        </div>
+
+        <!-- Main info -->
+        <div class="p-6">
+          <h4 class="text-xl font-bold text-gray-800 mb-1">
+            Marque: <?php echo htmlspecialchars($vehicule['marque']); ?>
+          </h4>
+          <h4 class="text-lg font-semibold text-gray-600">
+            Catégorie: <?php echo htmlspecialchars($vehicule['categorie']); ?>
+          </h4>
+        </div>
+
+        <!-- Details -->
+        <div class="px-6 pb-6 grid grid-cols-2 gap-4 text-gray-700">
+          <div class="flex items-center gap-3">
+            <i class="fa-solid fa-user-group text-green-600"></i>
+            <span class="font-medium">Nombre places: <?php echo htmlspecialchars($vehicule['nb_places']); ?></span>
+          </div>
+          <div class="flex items-center gap-3">
+            <i class="fa-solid fa-gas-pump text-green-600"></i>
+            <span class="font-medium">Carburant: <?php echo htmlspecialchars($vehicule['carburant']); ?></span>
+          </div>
+          <div class="flex items-center gap-3">
+            <i class="fa-solid fa-gears text-green-600"></i>
+            <span class="font-medium">Boite vitesse: <?php echo htmlspecialchars($vehicule['boit_vitesse']); ?></span>
+          </div>
+          <div class="flex items-center gap-3">
+            <i class="fa-solid fa-suitcase text-green-600"></i>
+            <span class="font-medium">Bagages: <?php echo htmlspecialchars($vehicule['bagages']); ?></span>
+          </div>
+        </div>
+      </div>
+
+                        <!-- Reservation Form Card -->
+                        <div class="max-w-lg mx-auto p-8 bg-gradient-to-r from-white via-gray-50 to-white rounded-3xl shadow-2xl border border-gray-100">
+                            <h2 class="text-3xl font-bold mb-6 text-center text-gray-800">Réservez votre véhicule</h2>
+                            
+                            <form method="POST" id="reservationForm" class="space-y-5">
+                            <!-- Dates -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                <label for="startDate" class="block text-sm font-medium mb-1 text-gray-700">Date de début</label>
+                                <input type="date" id="startDate" name="date_debut" 
+                                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"/>
+                                </div>
+                                <div>
+                                <label for="endDate" class="block text-sm font-medium mb-1 text-gray-700">Date de fin</label>
+                                <input type="date" id="endDate" name="date_fin" 
+                                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"/>
+                                </div>
                             </div>
 
-                            <!-- Main info -->
-                            <div class="p-6">
-                            <h4 class="text-xl font-bold text-gray-800 mb-1">
-                                Marque: <?php echo htmlspecialchars($vehicule["marque"]); ?>
-                            </h4>
-                            <h4 class="text-lg font-semibold text-gray-600">
-                                Catégorie: <?php echo htmlspecialchars($vehicule["categorie"]); ?>
-                            </h4>
+                            <!-- Lieux -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                <label for="pickup" class="block text-sm font-medium mb-1 text-gray-700">Lieu de prise</label>
+                                <select id="pickup" name="lieu_depart" 
+                                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                                    <option value="">Sélectionner un lieu</option>
+                                    <option value="Casablanca">Casablanca</option>
+                                    <option value="Rabat">Rabat</option>
+                                    <option value="Marrakech">Marrakech</option>
+                                </select>
+                                </div>
+                                <div>
+                                <label for="dropoff" class="block text-sm font-medium mb-1 text-gray-700">Lieu de retour</label>
+                                <select id="dropoff" name="lieu_retour" 
+                                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                                    <option value="">Sélectionner un lieu</option>
+                                    <option value="Casablanca">Casablanca</option>
+                                    <option value="Rabat">Rabat</option>
+                                    <option value="Marrakech">Marrakech</option>
+                                </select>
+                                </div>
                             </div>
 
-                            <!-- Details (design like image) -->
-                            <div class="px-6 pb-6 grid grid-cols-2 gap-4 text-gray-700">
-
-                            <div class="flex items-center gap-3">
-                                <i class="fa-solid fa-user-group text-green-600"></i>
-                                <span class="font-medium">
-                                    Nombre places: <?php echo htmlspecialchars($vehicule["nb_places"]); ?>
-                                </span>
-                            </div>
-
-                            <div class="flex items-center gap-3">
-                                <i class="fa-solid fa-gas-pump text-green-600"></i>
-                                <span class="font-medium">
-                                Carburant: <?php echo htmlspecialchars($vehicule["carburant"]); ?>
-                                </span>
-                            </div>
-
-                            <div class="flex items-center gap-3">
-                                <i class="fa-solid fa-gears text-green-600"></i>
-                                <span class="font-medium">
-                                Boite vitesse: <?php echo htmlspecialchars($vehicule["boit_vitesse"]); ?>
-                                </span>
-                            </div>
-
-                            <div class="flex items-center gap-3">
-                                <i class="fa-solid fa-suitcase text-green-600"></i>
-                                <span class="font-medium">
-                                Bagages: <?php echo htmlspecialchars($vehicule["bagages"]); ?>
-                                </span>
-                            </div>
-
-                            </div>
+                            <!-- Submit -->
+                            <button type="submit" name="submit"
+                                    class="w-full bg-red-600 text-white font-semibold py-3 rounded-xl hover:bg-red-700 shadow-lg transition-colors">
+                                Réserver maintenant
+                            </button>
+                            </form>
                         </div>
-            </div>
 
-</section>
+    </div>
+  </section>
 
-<!-- Footer -->
-<footer class="bg-gray-900 text-white pt-16 pb-8">
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white pt-16 pb-8">
     <div class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
       <div>
         <span class="font-bold text-2xl tracking-tight">LOCATION<span class="text-red-600">VOITURE</span>.ma</span>
@@ -142,9 +206,14 @@ include_once './classes/Database.php';
     <div class="border-t border-gray-800 pt-8 text-center text-gray-500 text-sm">
       <p>&copy; 2025 MaBagnole. Tous droits réservés.</p>
     </div>
-</footer>
-</body>
-</html>
+  </footer>
 
-  </body>
+  <!-- <script>
+    const form = document.getElementById('reservationForm');
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      alert('Votre réservation a été envoyée !');
+    });
+  </script> -->
+</body>
 </html>

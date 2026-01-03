@@ -15,11 +15,9 @@ include_once 'connexion.php';
            if(isset($_POST['submit'])) {
             $key = $_POST['key'];
              $search = "%$key%";
-            $stmt = $pdo->prepare("SELECT *, categories.nom AS categorie
-            FROM vehicules
-            LEFT JOIN categories ON vehicules.id_cate = categories.id_C WHERE  modele LIKE ? OR categories.nom LIKE ?");
-            $stmt->execute([$search ,$search]);
-            $result = $stmt->fetchAll(); 
+             $vehiculeRepo = new VehiculeRepository($pdo);
+             $vehicules = $vehiculeRepo->searchParModel($search);
+           
             
              
 

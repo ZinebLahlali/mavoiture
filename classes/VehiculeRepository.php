@@ -54,6 +54,18 @@
 
 }
 
+public static function searchParModel($search)
+{       $db = new Database();
+       $pdo = $db->getPdo();
+       $stmt = $pdo->prepare("SELECT *, categories.nom AS categorie
+            FROM vehicules
+            LEFT JOIN categories ON vehicules.id_cate = categories.id_C WHERE  modele LIKE ?");
+            $stmt->execute([$search]);
+            $result = $stmt->fetchAll(); 
+
+
+} 
+
 
 
 
