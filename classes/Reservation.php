@@ -7,8 +7,9 @@ class Reservation
    private $lieu_retour;
    private $statut = 'available';
    private $id_client;
+   private $id_vehicule;
 
-   public function __construct($id_res, $date_debut, $date_fin, $lieu_depart, $lieu_retour, $statut, $id_client){
+   public function __construct($id_res = '', $id_client= '', $id_vehicule = '', $date_debut = '', $date_fin = '', $lieu_depart = '', $lieu_retour ='', $statut = ''){
         $this->id_res = $id_res;
         $this->date_debut = $date_debut;
         $this->date_fin = $date_fin;
@@ -16,6 +17,7 @@ class Reservation
         $this->lieu_retour = $lieu_retour;
         $this->statut = $statut;
         $this->id_client = $id_client;
+        $this->id_vehicule = $id_vehicule;
 
          
    }
@@ -43,6 +45,9 @@ public function getStatut(){
 public function getclient(){
     return $this->id_client;
 }
+public function getVehicule(){
+    return $this->id_vehicule;
+}
 
 
 //setters
@@ -67,20 +72,24 @@ public function setStatut($statut){
 public function setClient($id_client){
     $this->id_client= $id_client;
 }
+public function setVehicule($id_vehicule){
+    $this->id_vehicule= $id_vehicule;
+}
  
    public function creer()
    {   $db = new Database();
        $pdo = $db->getPdo();
 
-       $sql = 'INSERT INTO reservations(date_debut,date_fin,lieu_depart, lieu_retour, statut, id_client) VALUES (?,?,?,?,?,?)';
+       $sql = 'INSERT INTO reservations(id_client, id_vehicule, date_debut,date_fin,lieu_depart, lieu_retour, statut) VALUES (?,?,?,?,?,?,?)';
        $stmt = $pdo->prepare($sql);
        $stmt->execute([
+            $this->$id_client,
+            $this->id_vehicule,
             $this->date_debut,
             $this->date_fin,
             $this->lieu_depart,
             $this->lieu_retour,
-            $this->statut,
-            $this->id_client
+            $this->statut   
        ]);
    }
 
@@ -88,12 +97,11 @@ public function setClient($id_client){
   { $db = new Database();
     $pdo = $db->getPdo();
 
-    $sql = 'SELECT * FROM reservations WHERE id_car= ? AND date_debut <= ? AND date_fin >= ?';
+    $sql = 'SELECT * FROM reservations WHERE id_vehicule= ? AND date_debut <= ? AND date_fin >= ?';
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$id_car, $date_fin, $date_debut]);
+    $stmt->execute([$id_car,$dateDebut, $dateFin]);
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
     return $result ? false : true;
-
   }
 
  

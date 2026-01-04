@@ -66,6 +66,56 @@ public static function searchParModel($search)
 
 } 
 
+public function  countVehicules(): int 
+{   $db = new Database();
+    $pdo = $db->getPdo();
+
+    $sql = 'SELECT COUNT(*) AS total
+    FROM vehicules';
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+
+    return (int) $stmt->fetchColumn();
+}
+
+public function  countCategories(): int 
+{   $db = new Database();
+    $pdo = $db->getPdo();
+
+    $sql = 'SELECT COUNT(*) AS total
+    FROM categories';
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+
+    return (int) $stmt->fetchColumn();
+}
+
+public function  countUsers(): int 
+{   $db = new Database();
+    $pdo = $db->getPdo();
+
+    $sql = 'SELECT COUNT(*) AS total
+    FROM clients
+    WHERE role = "client"';
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+
+    return (int) $stmt->fetchColumn();
+}
+
+public function  countReservation(): int 
+{   $db = new Database();
+    $pdo = $db->getPdo();
+
+    $sql = 'SELECT COUNT(*) AS total
+    FROM reservations';
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+
+    return (int) $stmt->fetchColumn();
+}
+
+
 
 
 

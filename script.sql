@@ -80,3 +80,5 @@ ALTER TABLE vehicules
 ADD image varchar (255);
 
 SELECT * FROM vehicules;
+
+SELECT * FROM clients;

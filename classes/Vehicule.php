@@ -122,8 +122,10 @@ public static function getById($id_car)
 
     //   $stmt->setFetchMode(PDO::FETCH_CLASS, 'Vehicule');
      return $stmt->fetch();
-
 }
+
+
+
 
 
 

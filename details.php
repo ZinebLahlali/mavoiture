@@ -8,38 +8,69 @@ include_once './classes/Reservation.php';
  
 
  $id_car = $_GET['id'] ?? null;
+ echo $id_car;
+ echo $_SESSION['id_client'];
+
   if($id_car){
     $vehicule = Vehicule::getById($id_car);
   }
 
-
- 
-
+//Ajouter réservation
   if(isset($_POST['submit'])){
-        $id_car = $_SESSION['id_car'];
-        $id_client = $_SESSION['id_client']; 
+        $id_client = $_SESSION['id_client'] ; 
         $dateDebut = $_POST['date_debut'] ?? '';
         $dateFin = $_POST['date_fin'] ?? '';
         $lieuD = $_POST['lieu_depart'] ?? '';
         $lieuR = $_POST['lieu_retour'] ?? '';
+        $statut = 'available';
        
 
-     $res = new Reservation();
-     $res->setDatedebut($dateDebut);
-    $res->setDatefin($dateFin);
-    $res->setLieuD($lieuD);
-    $res->setlieuR($lieuR);
-    $res->setClient($id_client);
-     
-     if($res->isDisponible($id_car, $dateDebut, $dateFin)){
-           $res->creer();
-            header('location: details.php');
+        $reservation = new Reservation();
+
+        $reservation->setDateDebut($dateDebut);
+        $reservation->setDateFin($dateFin);
+        $reservation->setLieuD($lieuD);
+        $reservation->setLieuR($lieuR);
+        $reservation->setClient($id_client);
+        $reservation->setVehicule($id_car);
+
+        $isDisponible = $reservation->isDisponible($id_car, $dateDebut, $dateFin);
+
+        if ($isDisponible) {
+            $reservation->creer();
+            header('Location: details.php');
             exit;
-    } else {
-        echo "cette voiture n'est pas disponible pour ces dates";
-    }
+        } else {
+            echo "Cette voiture n'est pas disponible pour ces dates.";
+        }
+
    
   }
+
+
+  //Ajouter avis
+  if(isset($_POST['submit'])){
+      $id_car = $_SESSION['id_vehicule'];
+      $id_client = $_SESSION['id_client']; 
+      $note = $_POST['note'] ?? '';
+      $commentaire = $_POST['commentaire'] ?? '';
+      
+      $av = new Avis();
+      $av->setIdClient($id_client);
+      $av->setIdVehicule($id_car);
+      $av->setNote($note);
+      $av->setComment($commentaire);
+
+      $av->AddComment();
+       header('location: details.php');
+            exit;
+
+
+
+  }
+
+
+
 
 
 
@@ -67,10 +98,12 @@ include_once './classes/Reservation.php';
         <span class="font-bold text-2xl tracking-tight text-gray-800">LOCATION<span class="text-red-600">VOITURE</span>.ma</span>
       </div>
 
-      <div class="hidden md:flex items-center space-x-8 font-medium text-gray-600">
+      <div class=" md:flex items-center space-x-8 font-medium text-gray-600">
         <a href="Home.php" class="hover:text-red-600 transition">Accueil</a>
         <a href="index.php" class="hover:text-red-600 transition">Nos Voitures</a>
         <a href="#" class="hover:text-red-600 transition">Contact</a>
+        <button id="openPopup"  class="bg-red-600 text-white px-6 py-3 rounded-xl hover:bg-red-700 transition">
+            Réserver cette voiture </button>
       </div>
       
       <button class="md:hidden text-gray-600"><i class="fas fa-bars text-2xl"></i></button>
@@ -126,56 +159,130 @@ include_once './classes/Reservation.php';
         </div>
       </div>
 
-                        <!-- Reservation Form Card -->
-                        <div class="max-w-lg mx-auto p-8 bg-gradient-to-r from-white via-gray-50 to-white rounded-3xl shadow-2xl border border-gray-100">
-                            <h2 class="text-3xl font-bold mb-6 text-center text-gray-800">Réservez votre véhicule</h2>
-                            
-                            <form method="POST" id="reservationForm" class="space-y-5">
-                            <!-- Dates -->
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                <label for="startDate" class="block text-sm font-medium mb-1 text-gray-700">Date de début</label>
-                                <input type="date" id="startDate" name="date_debut" 
-                                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"/>
-                                </div>
-                                <div>
-                                <label for="endDate" class="block text-sm font-medium mb-1 text-gray-700">Date de fin</label>
-                                <input type="date" id="endDate" name="date_fin" 
-                                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"/>
-                                </div>
-                            </div>
+                 <!-- Reservation Form Card -->
+                       
+                <!-- Popup -->
+                <div id="reservationPopup" 
+                    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
 
-                            <!-- Lieux -->
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                <label for="pickup" class="block text-sm font-medium mb-1 text-gray-700">Lieu de prise</label>
-                                <select id="pickup" name="lieu_depart" 
-                                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500">
-                                    <option value="">Sélectionner un lieu</option>
-                                    <option value="Casablanca">Casablanca</option>
-                                    <option value="Rabat">Rabat</option>
-                                    <option value="Marrakech">Marrakech</option>
-                                </select>
-                                </div>
-                                <div>
-                                <label for="dropoff" class="block text-sm font-medium mb-1 text-gray-700">Lieu de retour</label>
-                                <select id="dropoff" name="lieu_retour" 
-                                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500">
-                                    <option value="">Sélectionner un lieu</option>
-                                    <option value="Casablanca">Casablanca</option>
-                                    <option value="Rabat">Rabat</option>
-                                    <option value="Marrakech">Marrakech</option>
-                                </select>
-                                </div>
-                            </div>
+                <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg p-8 relative">
+                    
+                    <!-- Bouton fermer -->
+                    <button id="closePopup" 
+                            class="absolute top-4 right-4 text-gray-500 hover:text-red-600 text-2xl font-bold">
+                    &times;
+                    </button>
 
-                            <!-- Submit -->
-                            <button type="submit" name="submit"
-                                    class="w-full bg-red-600 text-white font-semibold py-3 rounded-xl hover:bg-red-700 shadow-lg transition-colors">
-                                Réserver maintenant
-                            </button>
-                            </form>
+                    <h2 class="text-3xl font-bold mb-6 text-center text-gray-800">Réservez votre véhicule</h2>
+                    
+                    <form method="POST" id="reservationForm" class="space-y-5">
+
+                    <!-- Dates -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div>
+                        <label for="startDate" class="block text-sm font-medium mb-1 text-gray-700">Date de début</label>
+                        <input type="date" id="startDate" name="date_debut" 
+                                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"/>
                         </div>
+                        <div>
+                        <label for="endDate" class="block text-sm font-medium mb-1 text-gray-700">Date de fin</label>
+                        <input type="date" id="endDate" name="date_fin" 
+                                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"/>
+                        </div>
+                    </div>
+
+                    <!-- Lieux -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                        <label for="pickup" class="block text-sm font-medium mb-1 text-gray-700">Lieu de prise</label>
+                        <select id="pickup" name="lieu_depart" 
+                                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                            <option value="">Sélectionner un lieu</option>
+                            <option value="Casablanca">Casablanca</option>
+                            <option value="Rabat">Rabat</option>
+                            <option value="Marrakech">Marrakech</option>
+                        </select>
+                        </div>
+                        <div>
+                        <label for="dropoff" class="block text-sm font-medium mb-1 text-gray-700">Lieu de retour</label>
+                        <select id="dropoff" name="lieu_retour" 
+                                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                            <option value="">Sélectionner un lieu</option>
+                            <option value="Casablanca">Casablanca</option>
+                            <option value="Rabat">Rabat</option>
+                            <option value="Marrakech">Marrakech</option>
+                        </select>
+                        </div>
+                    </div>
+
+                    <!-- Submit -->
+                    <button type="submit" name="submit"
+                            class="w-full bg-red-600 text-white font-semibold py-3 rounded-xl hover:bg-red-700 shadow-lg transition-colors">
+                        Réserver maintenant
+                    </button>
+
+                    </form>
+                </div>
+                </div>
+
+
+                        <!-- Commentaires -->
+                        <div class="mb-8">
+                                <h2 class="text-2xl font-bold mb-4 text-red-700">Commentaires</h2>
+
+                                <?php foreach($avis as $avi): ?>
+                                    <div class="space-y-4">
+                                        <div class="bg-gray-100 p-4 rounded">
+                                            <p class="font-semibold text-red-700"><?= htmlspecialchars($avi['note']); ?></p>
+                                            <p><?= htmlspecialchars($avi['commentaire']); ?></p>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+
+                        </div>
+
+        <!-- Formulaire pour ajouter un commentaire -->
+                 <form method="POST" action="details.php" class="max-w-md mx-auto bg-white p-6 rounded-xl shadow space-y-4">
+
+                <input type="hidden" name="id_client" value="">
+
+                <input type="hidden" name="id_vehicule" value="">
+
+                <!-- Note (évaluation) -->
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-1">Évaluation (1-5)</label>
+                    <select name="note" class="w-full border border-gray-300 rounded px-4 py-2 focus:ring-2 focus:ring-red-700">
+                    <option value="">Sélectionnez une note</option>
+                    <option value="1">1 ⭐</option>
+                    <option value="2">2 ⭐⭐</option>
+                    <option value="3">3 ⭐⭐⭐</option>
+                    <option value="4">4 ⭐⭐⭐⭐</option>
+                    <option value="5">5 ⭐⭐⭐⭐⭐</option>
+                    </select>
+                </div>
+
+                <!-- Commentaire -->
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-1">Commentaire</label>
+                    <textarea name="commentaire" rows="4"
+                            placeholder="Ajoutez votre commentaire ici..."
+                            class="w-full border border-gray-300 rounded px-4 py-2 focus:ring-2 focus:ring-red-700"></textarea>
+                </div>
+
+                <!-- Bouton d'envoi -->
+                <button type="submit" name="submit"
+                        class="w-full bg-red-700 text-white font-semibold py-3 rounded-xl hover:bg-red-800 transition">
+                    Envoyer le commentaire
+                </button>
+
+                </form>
+
+                 </div>
+
+
+
+
+
+
 
     </div>
   </section>
@@ -208,12 +315,26 @@ include_once './classes/Reservation.php';
     </div>
   </footer>
 
-  <!-- <script>
-    const form = document.getElementById('reservationForm');
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-      alert('Votre réservation a été envoyée !');
-    });
-  </script> -->
+                <!-- JS pour ouvrir/fermer le popup -->
+                <script>
+                const openBtn = document.getElementById('openPopup');
+                const popup = document.getElementById('reservationPopup');
+                const closeBtn = document.getElementById('closePopup');
+
+                openBtn.addEventListener('click', () => {
+                    popup.classList.remove('hidden');
+                });
+
+                closeBtn.addEventListener('click', () => {
+                    popup.classList.add('hidden');
+                });
+
+                // Fermer le popup si on clique en dehors
+                popup.addEventListener('click', (e) => {
+                    if(e.target === popup){
+                    popup.classList.add('hidden');
+                    }
+                });
+                </script>
 </body>
 </html>

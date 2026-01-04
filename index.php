@@ -6,7 +6,6 @@ include_once 'connexion.php';
 
   $db = new Database();
   $pdo = $db->getPdo();
-
   
   $vehicules = Vehicule::listerTous(); 
 
@@ -32,18 +31,7 @@ include_once 'connexion.php';
              $vehicules = $vehiculeRepo->filtrerParCategorie($NomCategories);
 
        }
-    
-
-
-
-
-
-
 ?>
-
-
-
-
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -69,18 +57,14 @@ include_once 'connexion.php';
         <a href="Home.php" class="hover:text-red-600 transition">Accueil</a>
         <a href="#" class="hover:text-red-600 transition">Nos Voitures</a>
         <a href="#" class="hover:text-red-600 transition">Contact</a>
-        <a href="#" class="bg-red-600 text-white px-6 py-2 rounded-full hover:bg-red-700 transition shadow-md">Réservation</a>
-           <button id="openLogin" class="bg-red-600 text-white px-6 py-2 rounded-full hover:bg-red-700 transition shadow-md">
-            Se connecter
-        </button>
       </div>
       
       <button class="md:hidden text-gray-600"><i class="fas fa-bars text-2xl"></i></button>
          <span class="font-bold text-red-600">LOCATION-VOITURE.ma</span>
-        
-     
     </nav>
   </header>
+
+  <!-- =============LOGIN ========================= -->
 
     <div id="loginModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm p-4">
         
@@ -97,11 +81,7 @@ include_once 'connexion.php';
                     <label class="block text-sm font-semibold text-gray-700 mb-1">Email</label>
                     <input name="email" type="email" placeholder="exemple@mail.com" class="w-full px-4 py-3 bg-gray-50 border rounded-xl focus:ring-2 focus:ring-red-500 outline-none">
                 </div>
-                             <?php if(isset($_SESSION['error'])): ?>
-                                <div class="bg-red-100 text-red-700 p-3 rounded-lg mb-4">
-                                    <?php echo $_SESSION['error']; unset($_SESSION['error']); ?>
-                                </div>
-                            <?php endif; ?>
+
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1">Mot de passe</label>
                     <input  name="password_hash" type="password" placeholder="••••••••" class="w-full px-4 py-3 bg-gray-50 border rounded-xl focus:ring-2 focus:ring-red-500 outline-none">
@@ -210,7 +190,7 @@ include_once 'connexion.php';
 
 
 
-    <script>
+    <!-- <script>
         const modal = document.getElementById('loginModal');
         const btnOpen = document.getElementById('openLogin');
         const btnClose = document.getElementById('closeLogin');
@@ -234,7 +214,13 @@ include_once 'connexion.php';
                 modal.classList.remove('flex');
             }
         }
-    </script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("loginModal").classList.remove("hidden");
+        document.getElementById("loginModal").classList.add("flex");
+        });
+    </script> -->
+
 
 </body>
 </html>
